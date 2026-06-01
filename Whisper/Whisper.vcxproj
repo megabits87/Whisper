@@ -44,10 +44,10 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>$(ProjectDir);$(IncludePath)</IncludePath>
+    <IncludePath>$(ProjectDir);$(SolutionDir)third_party\whisper.cpp\include;$(SolutionDir)third_party\whisper.cpp\ggml\include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <IncludePath>$(ProjectDir);$(IncludePath)</IncludePath>
+    <IncludePath>$(ProjectDir);$(SolutionDir)third_party\whisper.cpp\include;$(SolutionDir)third_party\whisper.cpp\ggml\include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -183,6 +183,7 @@
     <ClCompile Include="Utils\parallelFor.cpp" />
     <ClCompile Include="Whisper\Spectrogram.cpp" />
     <ClCompile Include="Whisper\WhisperModel.cpp" />
+    <ClCompile Include="WhisperCpp\WhisperCppBackend.cpp" />
     <ClCompile Include="Whisper\Vocabulary.cpp" />
     <ClCompile Include="Whisper\DecoderResultBuffer.cpp" />
     <ClCompile Include="Whisper\DecoderInputBuffers.cpp" />
@@ -303,6 +304,7 @@
     <ClInclude Include="Whisper\Spectrogram.h" />
     <ClInclude Include="Whisper\loaderUtils.h" />
     <ClInclude Include="Whisper\WhisperModel.h" />
+    <ClInclude Include="WhisperCpp\WhisperCppBackend.h" />
     <ClInclude Include="Whisper\Vocabulary.h" />
     <ClInclude Include="Whisper\DecoderResultBuffer.h" />
     <ClInclude Include="Whisper\DecoderInputBuffers.h" />
