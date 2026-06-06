@@ -1,0 +1,10 @@
+{
+  "version": 2,
+  "dgSpecHash": "eek2hVPO0Es=",
+  "success": true,
+  "projectFilePath": "D:\\OneDrive\\Документы\\Codex\\Whisper\\Examples\\Smoke\\Smoke.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\admin\\.nuget\\packages\\comlightinterop\\1.3.7\\comlightinterop.1.3.7.nupkg.sha512"
+  ],
+  "logs": []
+}

@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <Platforms>x64</Platforms>
+    <PlatformTarget>x64</PlatformTarget>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="..\VoiceTyper\ManagedPcmBuffer.cs" Link="ManagedPcmBuffer.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\WhisperNet\WhisperNet.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="..\VoiceTyper\Whisper.dll" Link="Whisper.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+</Project>
