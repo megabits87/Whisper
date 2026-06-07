@@ -22,3 +22,11 @@ WhisperPS/obj/
 WhisperPS/bin/
 Tools/CompressTables/bin/
 Tools/CompressTables/obj/
+Examples/VoiceTyper/bin/
+Examples/VoiceTyper/obj/
+Tools/IconGen/bin/
+Tools/IconGen/obj/
+Examples/Smoke/bin/
+Examples/Smoke/obj/
+dist/
+*.zip

@@ -12,6 +12,7 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <AssemblyTitle>Whisper Voice Typer</AssemblyTitle>
     <ApplicationManifest>app.manifest</ApplicationManifest>
+    <ApplicationIcon>app.ico</ApplicationIcon>
   </PropertyGroup>
 
   <ItemGroup>

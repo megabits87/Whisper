@@ -40,6 +40,22 @@ namespace VoiceTyper
 				if( mono16k.Length < 16000 / 4 ) // shorter than ~0.25s: ignore
 					return "";
 
+				// Silence gate: Whisper hallucinates caption-credit phrases on silence, so skip quiet clips.
+				float peak = 0;
+				for( int i = 0; i < mono16k.Length; i++ )
+				{
+					float a = Math.Abs( mono16k[ i ] );
+					if( a > peak ) peak = a;
+				}
+				Log.Write( $"level peak={peak:0.000}" );
+				if( peak < 0.012f )
+					return "";
+				// Normalize quiet input to a healthy level — greatly improves accuracy for soft mics.
+				float gain = Math.Min( 0.95f / peak, 25f );
+				if( gain > 1.05f )
+					for( int i = 0; i < mono16k.Length; i++ )
+						mono16k[ i ] *= gain;
+
 				context.parameters.language = language;
 				context.parameters.setFlag( eFullParamsFlags.Translate, false );
 				context.parameters.setFlag( eFullParamsFlags.PrintTimestamps, false );
@@ -57,8 +73,31 @@ namespace VoiceTyper
 				var sb = new System.Text.StringBuilder();
 				foreach( var seg in res.segments )
 					sb.Append( seg.text );
-				return sb.ToString().Trim();
+				string outText = sb.ToString().Trim();
+				return IsHallucination( outText ) ? "" : outText;
 			}
+		}
+
+		// Common Whisper "silence hallucinations" — caption credits from its training data.
+		static readonly string[] hallucinationMarkers =
+		{
+			"субтитр", "ukraïner", "украйнер",
+			"дякую за перегляд", "спасибо за просмотр",
+			"thanks for watching", "subtitles by", "amara.org", "редактор субтитрів",
+		};
+
+		static bool IsHallucination( string text )
+		{
+			if( string.IsNullOrWhiteSpace( text ) )
+				return true;
+			string t = text.Trim();
+			if( ( t.StartsWith( "[" ) && t.EndsWith( "]" ) ) || ( t.StartsWith( "(" ) && t.EndsWith( ")" ) ) )
+				return true;
+			string low = t.ToLowerInvariant();
+			foreach( string m in hallucinationMarkers )
+				if( low.Contains( m ) )
+					return true;
+			return false;
 		}
 
 		public void Unload()

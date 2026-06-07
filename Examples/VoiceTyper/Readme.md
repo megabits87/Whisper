@@ -50,12 +50,22 @@ Push-to-talk + розпізнавання цілого фрагмента дає
 
 ## Збірка
 
+Застосунок на **WPF (.NET 8)**. Нативний `Whisper.dll` лежить поруч із проектом і копіюється у
+вихідну теку автоматично. Потрібен .NET 8 SDK (Windows) і GPU з підтримкою Direct3D 11.
+
 ```powershell
-dotnet build Examples/VoiceTyper/VoiceTyper.csproj -c Release
+# звичайна збірка
+dotnet build Examples/VoiceTyper/VoiceTyper.csproj -c Debug
+
+# реліз (self-contained, працює без встановленого .NET)
+dotnet publish Examples/VoiceTyper/VoiceTyper.csproj -c Release -r win-x64 `
+  --self-contained true -p:PublishSingleFile=false -p:GeneratePackageOnBuild=false
 ```
 
-Нативний `Whisper.dll` лежить поруч із проектом і копіюється у вихідну теку автоматично.
-Потрібен .NET 8 SDK (Windows) і GPU з підтримкою Direct3D 11.
+Готовий реліз: `dist/WhisperVoiceTyper-v1.0-win-x64.zip` — розпакувати й запустити `VoiceTyper.exe`
+(`Whisper.dll` має лежати поруч, він уже в архіві). Модель GGML завантажується окремо (див. нижче).
+
+Іконку `app.ico` генерує `Tools/IconGen` (векторний мікрофон, кілька розмірів).
 
 ## Запуск
 
