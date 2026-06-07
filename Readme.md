@@ -1,4 +1,25 @@
-﻿This project is a Windows port of the [whisper.cpp](https://github.com/ggerganov/whisper.cpp) implementation.<br/>
+﻿# 🎙️ Whisper Voice Typer (fork addition)
+
+> **EN —** A global push-to-talk dictation app for Windows built on top of this engine.
+> Hold a hotkey, speak, release — the recognized text is typed into **any focused window**
+> (browser, chat, editor…). Runs **fully offline on your GPU** via the Direct3D 11 engine below.
+> Dark WPF UI, live voice waveform overlay, system-tray, microphone + GPU + language selection.
+>
+> **UA —** Застосунок глобальної голосової диктовки для Windows на базі цього рушія.
+> Утримуєш клавішу, говориш, відпускаєш — розпізнаний текст вставляється у **будь-яке активне вікно**
+> (браузер, месенджер, редактор…). Працює **повністю офлайн на твоїй відеокарті**.
+> Темний інтерфейс, оверлей-хвиля голосу, згортання в трей, вибір мікрофона/GPU/мови.
+>
+> 📂 Code: [`Examples/VoiceTyper`](Examples/VoiceTyper) · 🧊 Icon tool: [`Tools/IconGen`](Tools/IconGen)
+> · 📖 [App README](Examples/VoiceTyper/Readme.md) · 📦 Prebuilt: see **Releases**.
+>
+> **Model note:** the bundled engine treats a model as multilingual only when `n_vocab == 51865`,
+> so for Ukrainian use **multilingual models up to v3** (`large-v2`, `medium`, `small`).
+> `large-v3` / `large-v3-turbo` work for English only on this engine. Quantized (`q5`/`q8`) models are not supported.
+
+---
+
+This project is a Windows port of the [whisper.cpp](https://github.com/ggerganov/whisper.cpp) implementation.<br/>
 Which in turn is a C++ port of [OpenAI's Whisper](https://github.com/openai/whisper) automatic speech recognition (ASR) model.
 
 # Identity Hijacking Warning
