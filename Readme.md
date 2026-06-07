@@ -13,9 +13,10 @@
 > 📂 Code: [`Examples/VoiceTyper`](Examples/VoiceTyper) · 🧊 Icon tool: [`Tools/IconGen`](Tools/IconGen)
 > · 📖 [App README](Examples/VoiceTyper/Readme.md) · 📦 Prebuilt: see **Releases**.
 >
-> **Model note:** the bundled engine treats a model as multilingual only when `n_vocab == 51865`,
-> so for Ukrainian use **multilingual models up to v3** (`large-v2`, `medium`, `small`).
-> `large-v3` / `large-v3-turbo` work for English only on this engine. Quantized (`q5`/`q8`) models are not supported.
+> **Model note:** the DirectCompute engine here is patched to support the **large-v3 vocabulary**
+> (`n_vocab` 51865 **and** 51866), so multilingual works with **`large-v3` and `large-v3-turbo`** too —
+> recommended for Ukrainian: **`large-v3-turbo`** (fastest, top quality) or `large-v2`. Quantized
+> (`q5`/`q8`) GGML models are **not** supported (use `f16`).
 
 ---
 

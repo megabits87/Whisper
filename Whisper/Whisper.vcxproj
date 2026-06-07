@@ -183,7 +183,6 @@
     <ClCompile Include="Utils\parallelFor.cpp" />
     <ClCompile Include="Whisper\Spectrogram.cpp" />
     <ClCompile Include="Whisper\WhisperModel.cpp" />
-    <ClCompile Include="WhisperCpp\WhisperCppBackend.cpp" />
     <ClCompile Include="Whisper\Vocabulary.cpp" />
     <ClCompile Include="Whisper\DecoderResultBuffer.cpp" />
     <ClCompile Include="Whisper\DecoderInputBuffers.cpp" />

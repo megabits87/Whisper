@@ -28,25 +28,42 @@ Push-to-talk + розпізнавання цілого фрагмента дає
 
 Налаштування зберігаються в `%AppData%\WhisperVoiceTyper\settings.json`.
 
-## ⚠️ Вибір моделі — важливо
+## Вибір моделі
 
-Готовий `Whisper.dll` (реліз Const-me) використовує **стару** whisper.cpp, де модель
-вважається multilingual лише якщо розмір словника `n_vocab == 51865`.
+Нативний рушій тут **пропатчено під словник large-v3** (`Vocabulary` приймає `n_vocab` 51865 **і** 51866
+та коректно зсуває спецтокени), тож multilingual працює і з **large-v3 / large-v3-turbo**.
 
-* **large-v3 / large-v3-turbo** мають `n_vocab = 51866` → рушій бачить їх як **тільки англійські**.
-  Українська з ними **не працюватиме** (вибір мови ігнорується).
-* Працюють multilingual-моделі **до v3**: `small`, `medium`, `large-v1`, `large-v2`.
+* Працюють **f16** multilingual-моделі: `small`, `medium`, `large-v1`, `large-v2`, `large-v3`, `large-v3-turbo`.
+* **Квантовані** (`q5`/`q8`) моделі рушій **не вантажить** — лише `f16`.
 
 ### Рекомендації для RTX 3060 (uk + en)
 
 | Модель | Розмір | Якість укр. | Швидкість | Посилання (HuggingFace) |
 |---|---|---|---|---|
-| `ggml-medium.bin` | ~1.5 GB | дуже добра | швидко | `https://huggingface.co/ggerganov/whisper.cpp/resolve/main/ggml-medium.bin` |
-| `ggml-large-v2.bin` | ~3.1 GB | найкраща | повільніше | `https://huggingface.co/ggerganov/whisper.cpp/resolve/main/ggml-large-v2.bin` |
-| `ggml-small.bin` | ~466 MB | прийнятна | дуже швидко | `https://huggingface.co/ggerganov/whisper.cpp/resolve/main/ggml-small.bin` |
+| `ggml-large-v3-turbo.bin` | ~1.6 GB | відмінна | **дуже швидко** | `.../resolve/main/ggml-large-v3-turbo.bin` |
+| `ggml-large-v2.bin` | ~3.1 GB | найкраща | повільніше | `.../resolve/main/ggml-large-v2.bin` |
+| `ggml-medium.bin` | ~1.5 GB | дуже добра | швидко | `.../resolve/main/ggml-medium.bin` |
+| `ggml-small.bin` | ~466 MB | прийнятна | дуже швидко | `.../resolve/main/ggml-small.bin` |
 
-> Щоб large-v3-turbo запрацював з українською, потрібно оновити нативний рушій до сучасної
-> whisper.cpp — саме це мета гілки `whispercpp-modernization` (підмодуль `third_party/whisper.cpp`).
+(База: `https://huggingface.co/ggerganov/whisper.cpp`)
+
+### Збірка нативного рушія (за потреби)
+
+Готовий `Whisper.dll` уже в репозиторії. Щоб перезібрати з патчем v3 (потрібні **VS Build Tools 2022**
+з C++ і Windows SDK):
+
+```powershell
+# 1) шейдери: ComputeShaders → CompressShaders генерує shaderData-Release.inl + мовні файли
+msbuild ComputeShaders\ComputeShaders.vcxproj /p:Configuration=Release /p:Platform=x64
+dotnet run --project Tools\CompressShaders\CompressShaders.csproj -c Release
+# 2) сам рушій
+msbuild WhisperCpp.sln /t:Whisper /p:Configuration=Release /p:Platform=x64
+# -> x64\Release\Whisper.dll
+```
+
+> Примітка: збірку краще робити **поза OneDrive** (синхронізація блокує запис згенерованих файлів).
+> Бекенд `Whisper/WhisperCpp` (сучасна whisper.cpp через підмодуль) поки виключено зі збірки —
+> працює пропатчений DirectCompute-рушій.
 
 ## Збірка
 
