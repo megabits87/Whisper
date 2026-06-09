@@ -22,6 +22,8 @@ namespace VoiceTyper
 		readonly float[] history = new float[ Bars ];
 		Mode mode = Mode.Hidden;
 		int phase;
+		float scale = 1f;        // DPI scale of the monitor the overlay is shown on
+		int pxW = W, pxH = H;    // physical-pixel size = logical size * scale
 
 		public ListeningOverlay( Func<float> levelProvider )
 		{
@@ -76,8 +78,25 @@ namespace VoiceTyper
 
 		void Reposition()
 		{
+			scale = GetDpiScale();
+			pxW = (int)Math.Round( W * scale );
+			pxH = (int)Math.Round( H * scale );
+			Size = new Size( pxW, pxH );
 			Rectangle wa = Screen.FromPoint( Cursor.Position ).WorkingArea;
-			Location = new Point( wa.Left + ( wa.Width - W ) / 2, wa.Bottom - H - 28 );
+			Location = new Point( wa.Left + ( wa.Width - pxW ) / 2, wa.Bottom - pxH - (int)Math.Round( 28 * scale ) );
+		}
+
+		float GetDpiScale()
+		{
+			try
+			{
+				var cp = Cursor.Position;
+				IntPtr mon = MonitorFromPoint( new POINT { x = cp.X, y = cp.Y }, MONITOR_DEFAULTTONEAREST );
+				if( GetDpiForMonitor( mon, MDT_EFFECTIVE_DPI, out uint dx, out uint _ ) == 0 && dx > 0 )
+					return dx / 96f;
+			}
+			catch { }
+			return 1f;
 		}
 
 		// ---- rendering ----
@@ -103,10 +122,12 @@ namespace VoiceTyper
 
 		Bitmap Render()
 		{
-			Bitmap bmp = new Bitmap( W, H, PixelFormat.Format32bppArgb );
+			Bitmap bmp = new Bitmap( pxW, pxH, PixelFormat.Format32bppArgb );
 			using Graphics g = Graphics.FromImage( bmp );
 			g.SmoothingMode = SmoothingMode.AntiAlias;
 			g.Clear( Color.Transparent );
+			// Draw everything below in logical (96-DPI) coordinates; the transform scales it crisply.
+			g.ScaleTransform( scale, scale );
 
 			// Pill background (opaque colour; whole window is dimmed by WindowAlpha).
 			using( GraphicsPath path = RoundRect( new Rectangle( 0, 0, W - 1, H - 1 ), 20 ) )
@@ -233,6 +254,11 @@ namespace VoiceTyper
 		[DllImport( "user32.dll", ExactSpelling = true, SetLastError = true )]
 		static extern bool UpdateLayeredWindow( IntPtr hwnd, IntPtr hdcDst, ref POINT pptDst, ref SIZE psize,
 			IntPtr hdcSrc, ref POINT pptSrc, int crKey, ref BLENDFUNCTION pblend, int dwFlags );
+		const uint MONITOR_DEFAULTTONEAREST = 2;
+		const int MDT_EFFECTIVE_DPI = 0;
+		[DllImport( "user32.dll" )] static extern IntPtr MonitorFromPoint( POINT pt, uint dwFlags );
+		[DllImport( "Shcore.dll" )] static extern int GetDpiForMonitor( IntPtr hmonitor, int dpiType, out uint dpiX, out uint dpiY );
+
 		[DllImport( "user32.dll", ExactSpelling = true )] static extern IntPtr GetDC( IntPtr hWnd );
 		[DllImport( "user32.dll", ExactSpelling = true )] static extern int ReleaseDC( IntPtr hWnd, IntPtr hDC );
 		[DllImport( "gdi32.dll", ExactSpelling = true )] static extern IntPtr CreateCompatibleDC( IntPtr hDC );

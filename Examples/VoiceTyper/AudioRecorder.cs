@@ -7,11 +7,17 @@ namespace VoiceTyper
 	/// <summary>Captures audio from a WASAPI device while recording, then returns mono 16 kHz float PCM.</summary>
 	sealed class AudioRecorder : IDisposable
 	{
+		// Safety cap so a stuck push-to-talk key can't grow the buffer without bound.
+		const double MaxSeconds = 120.0;
+
 		readonly object sync = new object();
+		readonly System.Threading.ManualResetEventSlim stopped = new System.Threading.ManualResetEventSlim( false );
 		WasapiCapture? capture;
 		List<float> mono = new List<float>( 16000 * 10 );
 		int sourceRate;
 		int sourceChannels;
+		int maxSamples;
+		bool capReached;
 
 		public bool IsRecording { get; private set; }
 
@@ -46,15 +52,21 @@ namespace VoiceTyper
 
 				mono = new List<float>( 16000 * 10 );
 				currentLevel = 0;
+				capReached = false;
+				stopped.Reset();
 				capture = device != null ? new WasapiCapture( device ) : new WasapiCapture();
 				WaveFormat fmt = capture.WaveFormat;
 				sourceRate = fmt.SampleRate;
 				sourceChannels = fmt.Channels;
+				maxSamples = (int)( sourceRate * MaxSeconds );
 				capture.DataAvailable += onData;
+				capture.RecordingStopped += onStopped;
 				capture.StartRecording();
 				IsRecording = true;
 			}
 		}
+
+		void onStopped( object? sender, StoppedEventArgs e ) => stopped.Set();
 
 		void onData( object? sender, WaveInEventArgs e )
 		{
@@ -77,7 +89,11 @@ namespace VoiceTyper
 						for( int ch = 0; ch < channels && i + ch < count; ch++ )
 							sum += BitConverter.ToSingle( e.Buffer, ( i + ch ) * 4 );
 						float s = sum / channels;
-						mono.Add( s );
+						if( !capReached )
+						{
+							mono.Add( s );
+							if( mono.Count >= maxSamples ) capReached = true;
+						}
 						float a = Math.Abs( s );
 						if( a > peak ) peak = a;
 					}
@@ -94,7 +110,11 @@ namespace VoiceTyper
 						for( int ch = 0; ch < channels && i + ch < count; ch++ )
 							sum += BitConverter.ToInt16( e.Buffer, ( i + ch ) * 2 ) / 32768f;
 						float s = sum / channels;
-						mono.Add( s );
+						if( !capReached )
+						{
+							mono.Add( s );
+							if( mono.Count >= maxSamples ) capReached = true;
+						}
 						float a = Math.Abs( s );
 						if( a > peak ) peak = a;
 					}
@@ -111,7 +131,7 @@ namespace VoiceTyper
 		{
 			WasapiCapture? c;
 			float[] src;
-			int rate, ch;
+			int rate;
 			lock( sync )
 			{
 				if( !IsRecording )
@@ -120,13 +140,16 @@ namespace VoiceTyper
 				c = capture;
 				capture = null;
 				rate = sourceRate;
-				ch = sourceChannels;
 			}
 
 			if( c != null )
 			{
 				try { c.StopRecording(); } catch { }
+				// StopRecording is asynchronous: the final DataAvailable buffer is delivered, then
+				// RecordingStopped fires. Wait for it so we don't drop the last word of speech.
+				try { stopped.Wait( 1000 ); } catch { }
 				c.DataAvailable -= onData;
+				c.RecordingStopped -= onStopped;
 				c.Dispose();
 			}
 
@@ -149,7 +172,8 @@ namespace VoiceTyper
 			float[] buffer = new float[ 16000 ];
 			int read;
 			while( ( read = resampler.Read( buffer, 0, buffer.Length ) ) > 0 )
-				outList.AddRange( buffer.AsSpan( 0, read ).ToArray() );
+				for( int k = 0; k < read; k++ )
+					outList.Add( buffer[ k ] );
 			return outList.ToArray();
 		}
 
@@ -160,11 +184,14 @@ namespace VoiceTyper
 				if( capture != null )
 				{
 					try { capture.StopRecording(); } catch { }
+					capture.DataAvailable -= onData;
+					capture.RecordingStopped -= onStopped;
 					capture.Dispose();
 					capture = null;
 				}
 				IsRecording = false;
 			}
+			stopped.Dispose();
 		}
 
 		/// <summary>Minimal mono <see cref="ISampleProvider"/> over an in-memory float array.</summary>

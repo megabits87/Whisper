@@ -10,23 +10,19 @@
     <Platforms>x64</Platforms>
     <PlatformTarget>x64</PlatformTarget>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <AssemblyTitle>Whisper Voice Typer</AssemblyTitle>
+    <AssemblyName>VoxType</AssemblyName>
+    <AssemblyTitle>VoxType</AssemblyTitle>
+    <Product>VoxType</Product>
+    <Company>VoxType</Company>
+    <Description>VoxType — offline push-to-talk voice dictation powered by whisper.cpp (GPU)</Description>
+    <Version>2.0.0</Version>
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <ApplicationIcon>app.ico</ApplicationIcon>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="NAudio" Version="2.2.1" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\..\WhisperNet\WhisperNet.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Content Include="Whisper.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
+    <PackageReference Include="System.Management" Version="8.0.0" />
   </ItemGroup>
 
 </Project>

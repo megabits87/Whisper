@@ -47,9 +47,21 @@ namespace VoiceTyper
 			}
 
 			IntPtr h = bmp.GetHicon();
-			using var tmp = Icon.FromHandle( h );
-			return (Icon)tmp.Clone();
+			try
+			{
+				using var tmp = Icon.FromHandle( h );
+				return (Icon)tmp.Clone();
+			}
+			finally
+			{
+				// Icon.FromHandle does not own the handle, so the HICON from GetHicon must be freed
+				// explicitly or it leaks on every call.
+				DestroyIcon( h );
+			}
 		}
+
+		[System.Runtime.InteropServices.DllImport( "user32.dll", SetLastError = true )]
+		static extern bool DestroyIcon( IntPtr hIcon );
 
 		static GraphicsPath Capsule( RectangleF r )
 		{

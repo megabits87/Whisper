@@ -6,6 +6,9 @@ namespace VoiceTyper
 	static class Log
 	{
 		static readonly object sync = new object();
+		const long MaxBytes = 2 * 1024 * 1024; // rotate once the log passes 2 MB
+		static bool rotateChecked;
+
 		public static bool Verbose = false;
 
 		public static string FilePath
@@ -14,7 +17,7 @@ namespace VoiceTyper
 			{
 				string dir = Path.Combine(
 					Environment.GetFolderPath( Environment.SpecialFolder.ApplicationData ),
-					"WhisperVoiceTyper" );
+					"VoxType" );
 				Directory.CreateDirectory( dir );
 				return Path.Combine( dir, "log.txt" );
 			}
@@ -25,7 +28,31 @@ namespace VoiceTyper
 			try
 			{
 				lock( sync )
-					File.AppendAllText( FilePath, $"{DateTime.Now:HH:mm:ss.fff}  {message}{Environment.NewLine}" );
+				{
+					string path = FilePath;
+					RotateIfNeeded( path );
+					File.AppendAllText( path, $"{DateTime.Now:HH:mm:ss.fff}  {message}{Environment.NewLine}" );
+				}
+			}
+			catch { }
+		}
+
+		// Caller must hold `sync`. Rotates at most once per process, and only when oversized.
+		static void RotateIfNeeded( string path )
+		{
+			if( rotateChecked )
+				return;
+			rotateChecked = true;
+			try
+			{
+				var fi = new FileInfo( path );
+				if( fi.Exists && fi.Length > MaxBytes )
+				{
+					string old = path + ".old";
+					if( File.Exists( old ) )
+						File.Delete( old );
+					File.Move( path, old );
+				}
 			}
 			catch { }
 		}

@@ -2,9 +2,9 @@
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:shell="clr-namespace:System.Windows.Shell;assembly=PresentationFramework"
-        Title="Whisper Voice Typer"
-        Width="620" Height="556"
-        MinWidth="540" MinHeight="500"
+        Title="VoxType"
+        Width="620" Height="672"
+        MinWidth="540" MinHeight="600"
         WindowStartupLocation="CenterScreen"
         WindowStyle="None"
         Background="#12141A"
@@ -361,7 +361,7 @@
                         <Rectangle Width="4" Height="10" RadiusX="2" RadiusY="2" Fill="{StaticResource Accent}" Margin="0,0,2,0"/>
                         <Rectangle Width="4" Height="18" RadiusX="2" RadiusY="2" Fill="{StaticResource Accent}"/>
                     </StackPanel>
-                    <TextBlock Text="Whisper Voice Typer" FontSize="15" FontWeight="SemiBold" VerticalAlignment="Center"/>
+                    <TextBlock Text="VoxType" FontSize="15" FontWeight="SemiBold" VerticalAlignment="Center"/>
                 </StackPanel>
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
                     <Button x:Name="BtnMin" Style="{StaticResource CaptionButton}" Content="&#xE921;" Click="BtnMin_Click"/>
@@ -391,6 +391,9 @@
                             <RowDefinition Height="Auto"/>
                             <RowDefinition Height="Auto"/>
                             <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="10"/>
                             <RowDefinition Height="Auto"/>
                             <RowDefinition Height="Auto"/>
                         </Grid.RowDefinitions>
@@ -429,7 +432,11 @@
                             <Path Data="{StaticResource GeoChip}" Stroke="{StaticResource Accent}" StrokeThickness="1.6" StrokeLineJoin="Round" Width="20" Height="20" Stretch="Uniform" VerticalAlignment="Center" Margin="0,0,12,0"/>
                             <TextBlock Style="{StaticResource RowLabel}" Text="Відеокарта"/>
                         </StackPanel>
-                        <ComboBox x:Name="CmbGpu" Grid.Row="4" Grid.Column="1" Style="{StaticResource RoundCombo}" Margin="0,5" SelectionChanged="CmbGpu_SelectionChanged"/>
+                        <Border Grid.Row="4" Grid.Column="1" Margin="0,5" Background="{StaticResource Input}" BorderBrush="{StaticResource Border}"
+                                BorderThickness="1" CornerRadius="10" Height="36">
+                            <TextBlock x:Name="TxtGpuName" Foreground="#D9D4FF" FontSize="13.5" VerticalAlignment="Center"
+                                       Margin="14,0" TextTrimming="CharacterEllipsis" Text="—"/>
+                        </Border>
 
                         <!-- Language -->
                         <StackPanel Grid.Row="5" Grid.Column="0" Orientation="Horizontal" Margin="0,5">
@@ -453,8 +460,48 @@
                         <ComboBox x:Name="CmbHotkey" Grid.Row="7" Grid.Column="1" Style="{StaticResource RoundCombo}" Margin="0,5" SelectionChanged="CmbHotkey_SelectionChanged"/>
 
                         <!-- Checkboxes -->
-                        <CheckBox x:Name="ChkSpace" Grid.Row="8" Grid.Column="1" Margin="0,10,0,4" Content="Додавати пробіл після тексту"/>
-                        <CheckBox x:Name="ChkSwallow" Grid.Row="9" Grid.Column="1" Margin="0,4,0,4" Content="Перехоплювати клавішу (не передавати)" Checked="ChkSwallow_Changed" Unchecked="ChkSwallow_Changed"/>
+                        <StackPanel Grid.Row="8" Grid.RowSpan="2" Grid.Column="1" Margin="0,8,0,0">
+                            <CheckBox x:Name="ChkSpace" Margin="0,4" Content="Додавати пробіл після тексту"/>
+                            <CheckBox x:Name="ChkSwallow" Margin="0,4" Content="Перехоплювати клавішу (не передавати)" Checked="ChkSwallow_Changed" Unchecked="ChkSwallow_Changed"/>
+                            <CheckBox x:Name="ChkAutostart" Margin="0,4" Content="Запускати при старті Windows" Checked="ChkAutostart_Changed" Unchecked="ChkAutostart_Changed"/>
+                        </StackPanel>
+
+                        <!-- Input: audio/video file to transcribe -->
+                        <StackPanel Grid.Row="11" Grid.Column="0" Orientation="Horizontal" Margin="0,5">
+                            <TextBlock Style="{StaticResource Glyph}" Text="&#xE767;" FontSize="18" Foreground="{StaticResource Accent}" Margin="0,0,12,0"/>
+                            <TextBlock Style="{StaticResource RowLabel}" Text="Input"/>
+                        </StackPanel>
+                        <Grid Grid.Row="11" Grid.Column="1" Margin="0,5">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="48"/>
+                            </Grid.ColumnDefinitions>
+                            <Border Grid.Column="0" Background="{StaticResource Input}" BorderBrush="{StaticResource Border}"
+                                    BorderThickness="1" CornerRadius="10" Height="38"
+                                    AllowDrop="True" DragOver="Input_DragOver" Drop="Input_Drop">
+                                <TextBlock x:Name="TxtInput" Foreground="{StaticResource Dim}" FontSize="13.5" VerticalAlignment="Center"
+                                           Margin="14,0" TextTrimming="CharacterEllipsis" Text="Виберіть або перетягніть файли"/>
+                            </Border>
+                            <Button x:Name="BtnInputBrowse" Grid.Column="1" Style="{StaticResource IconButton}" Content="&#xE8B7;" Height="38" Margin="8,0,0,0" Click="BtnInputBrowse_Click" ToolTip="Вибрати аудіо/відео файл"/>
+                        </Grid>
+
+                        <!-- Output: folder to save the .txt transcript -->
+                        <StackPanel Grid.Row="12" Grid.Column="0" Orientation="Horizontal" Margin="0,5">
+                            <TextBlock Style="{StaticResource Glyph}" Text="&#xE8A5;" FontSize="18" Foreground="{StaticResource Accent}" Margin="0,0,12,0"/>
+                            <TextBlock Style="{StaticResource RowLabel}" Text="Output"/>
+                        </StackPanel>
+                        <Grid Grid.Row="12" Grid.Column="1" Margin="0,5">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="48"/>
+                            </Grid.ColumnDefinitions>
+                            <Border Grid.Column="0" Background="{StaticResource Input}" BorderBrush="{StaticResource Border}"
+                                    BorderThickness="1" CornerRadius="10" Height="38">
+                                <TextBlock x:Name="TxtOutput" Foreground="{StaticResource Dim}" FontSize="13.5" VerticalAlignment="Center"
+                                           Margin="14,0" TextTrimming="CharacterEllipsis" Text="Виберіть папку для збереження"/>
+                            </Border>
+                            <Button x:Name="BtnOutputBrowse" Grid.Column="1" Style="{StaticResource IconButton}" Content="&#xE8B7;" Height="38" Margin="8,0,0,0" Click="BtnOutputBrowse_Click" ToolTip="Вибрати папку для збереження .txt"/>
+                        </Grid>
                     </Grid>
 
                 <!-- Status banner -->

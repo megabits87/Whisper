@@ -31,6 +31,20 @@ namespace VoiceTyper
 		/// <summary>Raised when the PTT key is released.</summary>
 		public event Action? KeyUp;
 
+		/// <summary>True while the PTT key is currently considered held down.</summary>
+		public bool IsHeld => keyHeld;
+
+		/// <summary>Force the key to be treated as released, raising <see cref="KeyUp"/> once if it was held.
+		/// Lets a watchdog recover from a missed WM_KEYUP (focus/session switch, secure desktop, etc.).</summary>
+		public void ForceRelease()
+		{
+			if( keyHeld )
+			{
+				keyHeld = false;
+				try { KeyUp?.Invoke(); } catch { }
+			}
+		}
+
 		public KeyboardHook( int[] keys )
 		{
 			Keys = keys;
@@ -59,10 +73,12 @@ namespace VoiceTyper
 			{
 				int msg = (int)wParam;
 				int vk = Marshal.ReadInt32( lParam ); // KBDLLHOOKSTRUCT.vkCode is the first field
-				if( Log.Verbose && ( msg == WM_KEYDOWN || msg == WM_SYSKEYDOWN || msg == WM_KEYUP || msg == WM_SYSKEYUP ) )
-					Log.Write( $"key msg=0x{msg:X3} vk=0x{vk:X2}" );
 				if( Array.IndexOf( Keys, vk ) >= 0 )
 				{
+					// Privacy: this is a system-wide hook, so we only ever log the configured
+					// push-to-talk key — never the codes of unrelated keystrokes.
+					if( Log.Verbose && ( msg == WM_KEYDOWN || msg == WM_SYSKEYDOWN || msg == WM_KEYUP || msg == WM_SYSKEYUP ) )
+						Log.Write( $"PTT key msg=0x{msg:X3} vk=0x{vk:X2}" );
 					if( msg == WM_KEYDOWN || msg == WM_SYSKEYDOWN )
 					{
 						if( !keyHeld )
