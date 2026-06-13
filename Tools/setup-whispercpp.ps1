@@ -1,12 +1,12 @@
 <#
 .SYNOPSIS
-  Installs the whisper.cpp GPU (CUDA/cuBLAS) backend that Whisper Voice Typer uses for recognition.
+  Installs the whisper.cpp GPU (CUDA/cuBLAS) backend that VoxType uses for recognition.
 
 .DESCRIPTION
   Downloads the prebuilt whisper.cpp server (CUDA 11.8 build) and the matching NVIDIA cuBLAS
   redistributable DLLs, and lays them out in one folder that the app launches.
 
-  Default target: %LocalAppData%\WhisperVoiceTyper\whispercpp
+  Default target: %LocalAppData%\VoxType\whispercpp
   After it finishes, that folder contains whisper-server.exe + all required DLLs, and the app
   will find it automatically (its default WhisperServerExe points there).
 
@@ -19,7 +19,7 @@
 #>
 [CmdletBinding()]
 param(
-    [string] $Target = (Join-Path $env:LOCALAPPDATA "WhisperVoiceTyper\whispercpp"),
+    [string] $Target = (Join-Path $env:LOCALAPPDATA "VoxType\whispercpp"),
     [string] $WhisperVersion = "v1.8.6",
     [string] $CublasArchive = "libcublas-windows-x86_64-11.11.3.6-archive.zip",
     [switch] $Force

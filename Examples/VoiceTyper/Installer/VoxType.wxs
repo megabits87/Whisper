@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Per-user MSI for VoxType. Installs the self-contained app (no .NET prerequisite, no admin/UAC)
+  into %LocalAppData%\Programs\VoxType and adds a Start-menu shortcut.
+
+  Build from the repo root (paths below are relative to it), after publishing the app to dist\VoxType
+  (dotnet publish ... self-contained), then:
+    wix build Examples\VoiceTyper\Installer\VoxType.wxs -arch x64 -o dist\VoxType-v2.0-win-x64.msi
+
+  The whisper.cpp GPU engine is NOT bundled (it is NVIDIA/CUDA-specific, ~0.8 GB); the bundled
+  setup-whispercpp.ps1 installs it into %LocalAppData%\VoxType\whispercpp, where the app finds it.
+-->
+<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs">
+  <Package Name="VoxType"
+           Manufacturer="VoxType"
+           Version="2.0.0"
+           UpgradeCode="a7e6c0b2-5f3d-4b8a-9c21-7d6e4f8a1b22"
+           Scope="perUser"
+           Compressed="yes">
+
+    <MajorUpgrade DowngradeErrorMessage="Новіша версія VoxType вже встановлена." />
+    <MediaTemplate EmbedCab="yes" />
+
+    <Icon Id="VoxTypeIcon" SourceFile="Examples\VoiceTyper\app.ico" />
+    <Property Id="ARPPRODUCTICON" Value="VoxTypeIcon" />
+    <Property Id="ARPNOREPAIR" Value="1" />
+
+    <StandardDirectory Id="LocalAppDataFolder">
+      <Directory Id="ProgramsFolder" Name="Programs">
+        <Directory Id="INSTALLFOLDER" Name="VoxType" />
+      </Directory>
+    </StandardDirectory>
+
+    <StandardDirectory Id="ProgramMenuFolder">
+      <Directory Id="AppShortcutFolder" Name="VoxType" />
+    </StandardDirectory>
+
+    <Feature Id="Main" Title="VoxType" Level="1">
+      <!-- Harvest the whole published self-contained app. NOTE: Files/@Include is resolved relative to
+           THIS .wxs file's directory (unlike Source/SourceFile below, which are relative to the build cwd). -->
+      <Files Include="..\..\..\dist\VoxType\**" Directory="INSTALLFOLDER" />
+      <ComponentGroupRef Id="Extras" />
+      <ComponentGroupRef Id="Shortcuts" />
+    </Feature>
+
+    <!-- Engine setup script, shipped alongside the app so the GPU backend can be installed on demand. -->
+    <ComponentGroup Id="Extras" Directory="INSTALLFOLDER">
+      <Component Id="EngineSetupScript" Guid="c2e5a7b1-9d83-4f02-b6c4-1a8e5f3d2c77">
+        <File Id="SetupWhisperCpp" Source="Tools\setup-whispercpp.ps1" />
+      </Component>
+    </ComponentGroup>
+
+    <ComponentGroup Id="Shortcuts" Directory="AppShortcutFolder">
+      <Component Id="StartMenuShortcut" Guid="b1d4f9a0-3c27-4e6b-8a15-2f0c9d7e3b44">
+        <Shortcut Id="VoxTypeStartMenu"
+                  Name="VoxType"
+                  Description="Offline голосове введення (whisper.cpp GPU)"
+                  Target="[INSTALLFOLDER]VoxType.exe"
+                  WorkingDirectory="INSTALLFOLDER"
+                  Icon="VoxTypeIcon" />
+        <RemoveFolder Id="RemoveAppShortcutFolder" On="uninstall" />
+        <RegistryValue Root="HKCU" Key="Software\VoxType" Name="installed"
+                       Type="integer" Value="1" KeyPath="yes" />
+      </Component>
+    </ComponentGroup>
+  </Package>
+</Wix>
