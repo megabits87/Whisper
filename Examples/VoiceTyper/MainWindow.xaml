@@ -3,18 +3,18 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:shell="clr-namespace:System.Windows.Shell;assembly=PresentationFramework"
         Title="VoxType"
-        Width="620" Height="672"
-        MinWidth="540" MinHeight="600"
+        Width="540" Height="588"
+        MinWidth="480" MinHeight="500"
         WindowStartupLocation="CenterScreen"
         WindowStyle="None"
         Background="#12141A"
         Foreground="#E6E9F0"
-        FontFamily="Segoe UI" FontSize="14"
+        FontFamily="Segoe UI" FontSize="13"
         UseLayoutRounding="True"
         TextOptions.TextFormattingMode="Display">
 
     <shell:WindowChrome.WindowChrome>
-        <shell:WindowChrome CaptionHeight="48" ResizeBorderThickness="6"
+        <shell:WindowChrome CaptionHeight="38" ResizeBorderThickness="6"
                             CornerRadius="0" GlassFrameThickness="0" UseAeroCaptionButtons="False"/>
     </shell:WindowChrome.WindowChrome>
 
@@ -28,7 +28,6 @@
         <SolidColorBrush x:Key="Text" Color="#E6E9F0"/>
         <SolidColorBrush x:Key="Dim" Color="#8A90A2"/>
         <SolidColorBrush x:Key="Accent" Color="#7C5CFF"/>
-        <SolidColorBrush x:Key="AccentHover" Color="#8E72FF"/>
         <SolidColorBrush x:Key="Green" Color="#3DD17A"/>
 
         <!-- Vector icon geometries -->
@@ -108,13 +107,28 @@
         <Style x:Key="RowLabel" TargetType="TextBlock">
             <Setter Property="Foreground" Value="{StaticResource Text}"/>
             <Setter Property="VerticalAlignment" Value="Center"/>
-            <Setter Property="FontSize" Value="14.5"/>
+            <Setter Property="FontSize" Value="13"/>
+        </Style>
+
+        <!-- Read-only value field (model path, GPU, input/output) -->
+        <Style x:Key="ValueBox" TargetType="Border">
+            <Setter Property="Background" Value="{StaticResource Input}"/>
+            <Setter Property="BorderBrush" Value="{StaticResource Border}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="CornerRadius" Value="8"/>
+            <Setter Property="Height" Value="32"/>
+        </Style>
+        <Style x:Key="ValueText" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="12.5"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="Margin" Value="12,0"/>
+            <Setter Property="TextTrimming" Value="CharacterEllipsis"/>
         </Style>
 
         <!-- Window caption buttons -->
         <Style x:Key="CaptionButton" TargetType="Button">
-            <Setter Property="Width" Value="44"/>
-            <Setter Property="Height" Value="32"/>
+            <Setter Property="Width" Value="40"/>
+            <Setter Property="Height" Value="28"/>
             <Setter Property="Background" Value="Transparent"/>
             <Setter Property="Foreground" Value="{StaticResource Dim}"/>
             <Setter Property="BorderThickness" Value="0"/>
@@ -157,39 +171,19 @@
             </Setter>
         </Style>
 
-        <!-- Rounded text box -->
-        <Style x:Key="RoundInput" TargetType="TextBox">
-            <Setter Property="Foreground" Value="#BDB2FF"/>
-            <Setter Property="CaretBrush" Value="{StaticResource Text}"/>
-            <Setter Property="Background" Value="{StaticResource Input}"/>
-            <Setter Property="BorderBrush" Value="{StaticResource Border}"/>
-            <Setter Property="BorderThickness" Value="1"/>
-            <Setter Property="Padding" Value="12,9"/>
-            <Setter Property="VerticalContentAlignment" Value="Center"/>
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="TextBox">
-                        <Border Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}"
-                                BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="10">
-                            <ScrollViewer x:Name="PART_ContentHost" Margin="{TemplateBinding Padding}"/>
-                        </Border>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-        </Style>
-
-        <!-- Icon button (folder, {}, reload, clear) -->
+        <!-- Icon button (folder, reload, clear) -->
         <Style x:Key="IconButton" TargetType="Button">
             <Setter Property="Background" Value="{StaticResource Surface2}"/>
             <Setter Property="Foreground" Value="{StaticResource Text}"/>
             <Setter Property="BorderThickness" Value="0"/>
             <Setter Property="Cursor" Value="Hand"/>
             <Setter Property="FontFamily" Value="Segoe Fluent Icons, Segoe MDL2 Assets"/>
-            <Setter Property="FontSize" Value="16"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="Height" Value="32"/>
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="Button">
-                        <Border x:Name="b" Background="{TemplateBinding Background}" CornerRadius="10"
+                        <Border x:Name="b" Background="{TemplateBinding Background}" CornerRadius="8"
                                 BorderBrush="{StaticResource Border}" BorderThickness="1">
                             <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
                         </Border>
@@ -212,11 +206,11 @@
             <Setter Property="Foreground" Value="{StaticResource Text}"/>
             <Setter Property="BorderThickness" Value="0"/>
             <Setter Property="Cursor" Value="Hand"/>
-            <Setter Property="Padding" Value="14,7"/>
+            <Setter Property="Padding" Value="10,5"/>
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="Button">
-                        <Border x:Name="b" Background="{TemplateBinding Background}" CornerRadius="9"
+                        <Border x:Name="b" Background="{TemplateBinding Background}" CornerRadius="8"
                                 BorderBrush="{StaticResource Border}" BorderThickness="1">
                             <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
                         </Border>
@@ -246,8 +240,7 @@
             <Setter Property="Background" Value="{StaticResource Input}"/>
             <Setter Property="BorderBrush" Value="{StaticResource Border}"/>
             <Setter Property="BorderThickness" Value="1"/>
-            <Setter Property="Height" Value="36"/>
-            <Setter Property="Padding" Value="12,0"/>
+            <Setter Property="Height" Value="32"/>
             <Setter Property="VerticalContentAlignment" Value="Center"/>
             <Setter Property="Template">
                 <Setter.Value>
@@ -255,21 +248,21 @@
                         <Grid>
                             <Border x:Name="bd" Background="{TemplateBinding Background}"
                                     BorderBrush="{TemplateBinding BorderBrush}"
-                                    BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="10"/>
+                                    BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="8"/>
                             <ToggleButton Style="{StaticResource ComboToggle}" Focusable="False"
                                           IsChecked="{Binding IsDropDownOpen, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}"/>
-                            <ContentPresenter x:Name="cp" Margin="14,0,38,0" VerticalAlignment="Center"
+                            <ContentPresenter x:Name="cp" Margin="12,0,32,0" VerticalAlignment="Center"
                                               Content="{TemplateBinding SelectionBoxItem}"
                                               ContentTemplate="{TemplateBinding SelectionBoxItemTemplate}"
                                               IsHitTestVisible="False"/>
-                            <TextBlock Style="{StaticResource Glyph}" Text="&#xE70D;" FontSize="12"
+                            <TextBlock Style="{StaticResource Glyph}" Text="&#xE70D;" FontSize="11"
                                        Foreground="{StaticResource Dim}" HorizontalAlignment="Right"
-                                       Margin="0,0,14,0" IsHitTestVisible="False"/>
+                                       Margin="0,0,12,0" IsHitTestVisible="False"/>
                             <Popup x:Name="PART_Popup" AllowsTransparency="True" Placement="Bottom"
                                    IsOpen="{Binding IsDropDownOpen, RelativeSource={RelativeSource TemplatedParent}}"
                                    PopupAnimation="Fade">
                                 <Border Background="{StaticResource Surface2}" BorderBrush="{StaticResource Border}"
-                                        BorderThickness="1" CornerRadius="10" Margin="0,4,0,0"
+                                        BorderThickness="1" CornerRadius="8" Margin="0,4,0,0"
                                         MinWidth="{Binding ActualWidth, RelativeSource={RelativeSource TemplatedParent}}">
                                     <Border.Effect>
                                         <DropShadowEffect BlurRadius="16" ShadowDepth="3" Opacity="0.5" Color="Black"/>
@@ -295,11 +288,11 @@
 
         <Style TargetType="ComboBoxItem">
             <Setter Property="Foreground" Value="{StaticResource Text}"/>
-            <Setter Property="Padding" Value="10,8"/>
+            <Setter Property="Padding" Value="8,6"/>
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="ComboBoxItem">
-                        <Border x:Name="b" Background="Transparent" CornerRadius="7" Padding="{TemplateBinding Padding}">
+                        <Border x:Name="b" Background="Transparent" CornerRadius="6" Padding="{TemplateBinding Padding}">
                             <ContentPresenter/>
                         </Border>
                         <ControlTemplate.Triggers>
@@ -324,12 +317,12 @@
                 <Setter.Value>
                     <ControlTemplate TargetType="CheckBox">
                         <StackPanel Orientation="Horizontal" Background="Transparent">
-                            <Border x:Name="box" Width="22" Height="22" CornerRadius="6"
+                            <Border x:Name="box" Width="18" Height="18" CornerRadius="5"
                                     Background="{StaticResource Input}" BorderBrush="{StaticResource Border}" BorderThickness="1">
-                                <TextBlock x:Name="chk" Style="{StaticResource Glyph}" Text="&#xE73E;" FontSize="13"
+                                <TextBlock x:Name="chk" Style="{StaticResource Glyph}" Text="&#xE73E;" FontSize="11"
                                            Foreground="White" HorizontalAlignment="Center" Visibility="Collapsed"/>
                             </Border>
-                            <ContentPresenter Margin="10,0,0,0" VerticalAlignment="Center"/>
+                            <ContentPresenter Margin="8,0,0,0" VerticalAlignment="Center"/>
                         </StackPanel>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsChecked" Value="True">
@@ -344,180 +337,170 @@
         </Style>
     </Window.Resources>
 
-    <Border CornerRadius="0" Background="{StaticResource Bg}">
+    <Border Background="{StaticResource Bg}">
         <Grid>
             <Grid.RowDefinitions>
-                <RowDefinition Height="48"/>
+                <RowDefinition Height="38"/>
                 <RowDefinition Height="*"/>
-                <RowDefinition Height="44"/>
+                <RowDefinition Height="32"/>
             </Grid.RowDefinitions>
 
             <!-- Title bar -->
-            <Grid Grid.Row="0" Margin="16,0,8,0">
+            <Grid Grid.Row="0" Margin="14,0,6,0">
                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="0,0,12,0">
-                        <Rectangle Width="4" Height="14" RadiusX="2" RadiusY="2" Fill="{StaticResource Accent}" Margin="0,0,2,0"/>
-                        <Rectangle Width="4" Height="22" RadiusX="2" RadiusY="2" Fill="{StaticResource Accent}" Margin="0,0,2,0"/>
-                        <Rectangle Width="4" Height="10" RadiusX="2" RadiusY="2" Fill="{StaticResource Accent}" Margin="0,0,2,0"/>
-                        <Rectangle Width="4" Height="18" RadiusX="2" RadiusY="2" Fill="{StaticResource Accent}"/>
+                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="0,0,10,0">
+                        <Rectangle Width="3" Height="11" RadiusX="1.5" RadiusY="1.5" Fill="{StaticResource Accent}" Margin="0,0,2,0"/>
+                        <Rectangle Width="3" Height="17" RadiusX="1.5" RadiusY="1.5" Fill="{StaticResource Accent}" Margin="0,0,2,0"/>
+                        <Rectangle Width="3" Height="8" RadiusX="1.5" RadiusY="1.5" Fill="{StaticResource Accent}" Margin="0,0,2,0"/>
+                        <Rectangle Width="3" Height="14" RadiusX="1.5" RadiusY="1.5" Fill="{StaticResource Accent}"/>
                     </StackPanel>
-                    <TextBlock Text="VoxType" FontSize="15" FontWeight="SemiBold" VerticalAlignment="Center"/>
+                    <TextBlock Text="VoxType" FontSize="13.5" FontWeight="SemiBold" VerticalAlignment="Center"/>
                 </StackPanel>
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
                     <Button x:Name="BtnMin" Style="{StaticResource CaptionButton}" Content="&#xE921;" Click="BtnMin_Click"/>
-                    <Button x:Name="BtnMax" Style="{StaticResource CaptionButton}" Content="&#xE922;" Click="BtnMax_Click"/>
                     <Button x:Name="BtnClose" Style="{StaticResource CloseButton}" Content="&#xE8BB;" Click="BtnClose_Click"/>
                 </StackPanel>
             </Grid>
 
             <!-- Content -->
-            <Grid Grid.Row="1" Margin="22,6,22,12">
+            <Grid Grid.Row="1" Margin="16,2,16,10">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
                 <Grid Grid.Row="0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="142"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="4"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="6"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <!-- Model -->
+                    <StackPanel Grid.Row="0" Grid.Column="0" Orientation="Horizontal" Margin="0,3">
+                        <Path Data="{StaticResource GeoCube}" Stroke="{StaticResource Accent}" StrokeThickness="1.6" StrokeLineJoin="Round" Width="17" Height="17" Stretch="Uniform" VerticalAlignment="Center" Margin="0,0,10,0"/>
+                        <TextBlock Style="{StaticResource RowLabel}" Text="Модель"/>
+                    </StackPanel>
+                    <Grid Grid.Row="0" Grid.Column="1" Margin="0,3">
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="180"/>
                             <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="40"/>
+                            <ColumnDefinition Width="40"/>
                         </Grid.ColumnDefinitions>
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="6"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="10"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                        </Grid.RowDefinitions>
-
-                        <!-- Model -->
-                        <StackPanel Grid.Row="0" Grid.Column="0" Orientation="Horizontal" Margin="0,5">
-                            <Path Data="{StaticResource GeoCube}" Stroke="{StaticResource Accent}" StrokeThickness="1.6" StrokeLineJoin="Round" Width="20" Height="20" Stretch="Uniform" VerticalAlignment="Center" Margin="0,0,12,0"/>
-                            <TextBlock Style="{StaticResource RowLabel}" Text="Модель"/>
-                        </StackPanel>
-                        <Grid Grid.Row="0" Grid.Column="1" Margin="0,5">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="48"/>
-                                <ColumnDefinition Width="48"/>
-                            </Grid.ColumnDefinitions>
-                            <Border Grid.Column="0" Background="{StaticResource Input}" BorderBrush="{StaticResource Border}"
-                                    BorderThickness="1" CornerRadius="10" Height="38">
-                                <TextBlock x:Name="TxtModel" Foreground="#D9D4FF" FontSize="13.5" VerticalAlignment="Center"
-                                           Margin="14,0" TextTrimming="CharacterEllipsis"/>
-                            </Border>
-                            <Button x:Name="BtnBrowse" Grid.Column="1" Style="{StaticResource IconButton}" Content="&#xE8DA;" Height="38" Margin="8,0,0,0" Click="BtnBrowse_Click" ToolTip="Вибрати файл моделі"/>
-                            <Button x:Name="BtnReload" Grid.Column="2" Style="{StaticResource IconButton}" Content="&#xE72C;" Height="38" Margin="8,0,0,0" Click="BtnReload_Click" ToolTip="Перезавантажити"/>
-                        </Grid>
-
-                        <TextBlock x:Name="LblModelInfo" Grid.Row="1" Grid.Column="1" Foreground="{StaticResource Dim}" FontSize="12.5" Margin="2,0,0,0"/>
-
-                        <!-- Microphone -->
-                        <StackPanel Grid.Row="3" Grid.Column="0" Orientation="Horizontal" Margin="0,5">
-                            <TextBlock Style="{StaticResource Glyph}" Text="&#xE720;" FontSize="18" Foreground="{StaticResource Accent}" Margin="0,0,12,0"/>
-                            <TextBlock Style="{StaticResource RowLabel}" Text="Мікрофон"/>
-                        </StackPanel>
-                        <ComboBox x:Name="CmbDevice" Grid.Row="3" Grid.Column="1" Style="{StaticResource RoundCombo}" Margin="0,5"/>
-
-                        <!-- GPU -->
-                        <StackPanel Grid.Row="4" Grid.Column="0" Orientation="Horizontal" Margin="0,5">
-                            <Path Data="{StaticResource GeoChip}" Stroke="{StaticResource Accent}" StrokeThickness="1.6" StrokeLineJoin="Round" Width="20" Height="20" Stretch="Uniform" VerticalAlignment="Center" Margin="0,0,12,0"/>
-                            <TextBlock Style="{StaticResource RowLabel}" Text="Відеокарта"/>
-                        </StackPanel>
-                        <Border Grid.Row="4" Grid.Column="1" Margin="0,5" Background="{StaticResource Input}" BorderBrush="{StaticResource Border}"
-                                BorderThickness="1" CornerRadius="10" Height="36">
-                            <TextBlock x:Name="TxtGpuName" Foreground="#D9D4FF" FontSize="13.5" VerticalAlignment="Center"
-                                       Margin="14,0" TextTrimming="CharacterEllipsis" Text="—"/>
+                        <Border Grid.Column="0" Style="{StaticResource ValueBox}">
+                            <TextBlock x:Name="TxtModel" Style="{StaticResource ValueText}" Foreground="#D9D4FF"/>
                         </Border>
-
-                        <!-- Language -->
-                        <StackPanel Grid.Row="5" Grid.Column="0" Orientation="Horizontal" Margin="0,5">
-                            <TextBlock Style="{StaticResource Glyph}" Text="&#xE774;" FontSize="18" Foreground="{StaticResource Accent}" Margin="0,0,12,0"/>
-                            <TextBlock Style="{StaticResource RowLabel}" Text="Мова"/>
-                        </StackPanel>
-                        <ComboBox x:Name="CmbLang" Grid.Row="5" Grid.Column="1" Style="{StaticResource RoundCombo}" Margin="0,5"/>
-
-                        <!-- Insert -->
-                        <StackPanel Grid.Row="6" Grid.Column="0" Orientation="Horizontal" Margin="0,5">
-                            <TextBlock Style="{StaticResource Glyph}" Text="&#xE765;" FontSize="18" Foreground="{StaticResource Accent}" Margin="0,0,12,0"/>
-                            <TextBlock Style="{StaticResource RowLabel}" Text="Вставка тексту"/>
-                        </StackPanel>
-                        <ComboBox x:Name="CmbInsert" Grid.Row="6" Grid.Column="1" Style="{StaticResource RoundCombo}" Margin="0,5"/>
-
-                        <!-- Hotkey -->
-                        <StackPanel Grid.Row="7" Grid.Column="0" Orientation="Horizontal" Margin="0,5">
-                            <TextBlock Style="{StaticResource Glyph}" Text="&#xE92E;" FontSize="18" Foreground="{StaticResource Accent}" Margin="0,0,12,0"/>
-                            <TextBlock Style="{StaticResource RowLabel}" Text="Клавіша"/>
-                        </StackPanel>
-                        <ComboBox x:Name="CmbHotkey" Grid.Row="7" Grid.Column="1" Style="{StaticResource RoundCombo}" Margin="0,5" SelectionChanged="CmbHotkey_SelectionChanged"/>
-
-                        <!-- Checkboxes -->
-                        <StackPanel Grid.Row="8" Grid.RowSpan="2" Grid.Column="1" Margin="0,8,0,0">
-                            <CheckBox x:Name="ChkSpace" Margin="0,4" Content="Додавати пробіл після тексту"/>
-                            <CheckBox x:Name="ChkSwallow" Margin="0,4" Content="Перехоплювати клавішу (не передавати)" Checked="ChkSwallow_Changed" Unchecked="ChkSwallow_Changed"/>
-                            <CheckBox x:Name="ChkAutostart" Margin="0,4" Content="Запускати при старті Windows" Checked="ChkAutostart_Changed" Unchecked="ChkAutostart_Changed"/>
-                        </StackPanel>
-
-                        <!-- Input: audio/video file to transcribe -->
-                        <StackPanel Grid.Row="11" Grid.Column="0" Orientation="Horizontal" Margin="0,5">
-                            <TextBlock Style="{StaticResource Glyph}" Text="&#xE767;" FontSize="18" Foreground="{StaticResource Accent}" Margin="0,0,12,0"/>
-                            <TextBlock Style="{StaticResource RowLabel}" Text="Input"/>
-                        </StackPanel>
-                        <Grid Grid.Row="11" Grid.Column="1" Margin="0,5">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="48"/>
-                            </Grid.ColumnDefinitions>
-                            <Border Grid.Column="0" Background="{StaticResource Input}" BorderBrush="{StaticResource Border}"
-                                    BorderThickness="1" CornerRadius="10" Height="38"
-                                    AllowDrop="True" DragOver="Input_DragOver" Drop="Input_Drop">
-                                <TextBlock x:Name="TxtInput" Foreground="{StaticResource Dim}" FontSize="13.5" VerticalAlignment="Center"
-                                           Margin="14,0" TextTrimming="CharacterEllipsis" Text="Виберіть або перетягніть файли"/>
-                            </Border>
-                            <Button x:Name="BtnInputBrowse" Grid.Column="1" Style="{StaticResource IconButton}" Content="&#xE8B7;" Height="38" Margin="8,0,0,0" Click="BtnInputBrowse_Click" ToolTip="Вибрати аудіо/відео файл"/>
-                        </Grid>
-
-                        <!-- Output: folder to save the .txt transcript -->
-                        <StackPanel Grid.Row="12" Grid.Column="0" Orientation="Horizontal" Margin="0,5">
-                            <TextBlock Style="{StaticResource Glyph}" Text="&#xE8A5;" FontSize="18" Foreground="{StaticResource Accent}" Margin="0,0,12,0"/>
-                            <TextBlock Style="{StaticResource RowLabel}" Text="Output"/>
-                        </StackPanel>
-                        <Grid Grid.Row="12" Grid.Column="1" Margin="0,5">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="48"/>
-                            </Grid.ColumnDefinitions>
-                            <Border Grid.Column="0" Background="{StaticResource Input}" BorderBrush="{StaticResource Border}"
-                                    BorderThickness="1" CornerRadius="10" Height="38">
-                                <TextBlock x:Name="TxtOutput" Foreground="{StaticResource Dim}" FontSize="13.5" VerticalAlignment="Center"
-                                           Margin="14,0" TextTrimming="CharacterEllipsis" Text="Виберіть папку для збереження"/>
-                            </Border>
-                            <Button x:Name="BtnOutputBrowse" Grid.Column="1" Style="{StaticResource IconButton}" Content="&#xE8B7;" Height="38" Margin="8,0,0,0" Click="BtnOutputBrowse_Click" ToolTip="Вибрати папку для збереження .txt"/>
-                        </Grid>
+                        <Button x:Name="BtnBrowse" Grid.Column="1" Style="{StaticResource IconButton}" Content="&#xE8DA;" Margin="6,0,0,0" Click="BtnBrowse_Click" ToolTip="Вибрати файл моделі"/>
+                        <Button x:Name="BtnReload" Grid.Column="2" Style="{StaticResource IconButton}" Content="&#xE72C;" Margin="6,0,0,0" Click="BtnReload_Click" ToolTip="Перезавантажити"/>
                     </Grid>
 
-                <!-- Status banner -->
-                <Border Grid.Row="1" Background="{StaticResource Surface}" CornerRadius="14" Padding="18,14" Margin="0,14,0,0">
-                        <StackPanel Orientation="Horizontal">
-                            <Grid Width="30" Height="30" Margin="0,0,14,0">
-                                <Ellipse x:Name="StatusDotBig" Fill="{StaticResource Green}"/>
-                                <TextBlock x:Name="StatusIcon" Style="{StaticResource Glyph}" Text="&#xE73E;" FontSize="15" Foreground="White" HorizontalAlignment="Center"/>
-                            </Grid>
-                            <TextBlock x:Name="TxtStatus" VerticalAlignment="Center" FontSize="15.5" FontWeight="SemiBold"
-                                       Foreground="{StaticResource Green}" Text="Завантажте модель…"/>
-                        </StackPanel>
+                    <TextBlock x:Name="LblModelInfo" Grid.Row="1" Grid.Column="1" Foreground="{StaticResource Dim}" FontSize="11.5" Margin="2,0,0,0"/>
+
+                    <!-- Microphone -->
+                    <StackPanel Grid.Row="3" Grid.Column="0" Orientation="Horizontal" Margin="0,3">
+                        <TextBlock Style="{StaticResource Glyph}" Text="&#xE720;" FontSize="16" Foreground="{StaticResource Accent}" Margin="0,0,10,0"/>
+                        <TextBlock Style="{StaticResource RowLabel}" Text="Мікрофон"/>
+                    </StackPanel>
+                    <ComboBox x:Name="CmbDevice" Grid.Row="3" Grid.Column="1" Style="{StaticResource RoundCombo}" Margin="0,3"/>
+
+                    <!-- GPU -->
+                    <StackPanel Grid.Row="4" Grid.Column="0" Orientation="Horizontal" Margin="0,3">
+                        <Path Data="{StaticResource GeoChip}" Stroke="{StaticResource Accent}" StrokeThickness="1.6" StrokeLineJoin="Round" Width="17" Height="17" Stretch="Uniform" VerticalAlignment="Center" Margin="0,0,10,0"/>
+                        <TextBlock Style="{StaticResource RowLabel}" Text="Відеокарта"/>
+                    </StackPanel>
+                    <Border Grid.Row="4" Grid.Column="1" Margin="0,3" Style="{StaticResource ValueBox}">
+                        <TextBlock x:Name="TxtGpuName" Style="{StaticResource ValueText}" Foreground="#D9D4FF" Text="—"/>
                     </Border>
 
+                    <!-- Language -->
+                    <StackPanel Grid.Row="5" Grid.Column="0" Orientation="Horizontal" Margin="0,3">
+                        <TextBlock Style="{StaticResource Glyph}" Text="&#xE774;" FontSize="16" Foreground="{StaticResource Accent}" Margin="0,0,10,0"/>
+                        <TextBlock Style="{StaticResource RowLabel}" Text="Мова"/>
+                    </StackPanel>
+                    <ComboBox x:Name="CmbLang" Grid.Row="5" Grid.Column="1" Style="{StaticResource RoundCombo}" Margin="0,3"/>
+
+                    <!-- Insert -->
+                    <StackPanel Grid.Row="6" Grid.Column="0" Orientation="Horizontal" Margin="0,3">
+                        <TextBlock Style="{StaticResource Glyph}" Text="&#xE765;" FontSize="16" Foreground="{StaticResource Accent}" Margin="0,0,10,0"/>
+                        <TextBlock Style="{StaticResource RowLabel}" Text="Вставка тексту"/>
+                    </StackPanel>
+                    <ComboBox x:Name="CmbInsert" Grid.Row="6" Grid.Column="1" Style="{StaticResource RoundCombo}" Margin="0,3"/>
+
+                    <!-- Hotkey -->
+                    <StackPanel Grid.Row="7" Grid.Column="0" Orientation="Horizontal" Margin="0,3">
+                        <TextBlock Style="{StaticResource Glyph}" Text="&#xE92E;" FontSize="16" Foreground="{StaticResource Accent}" Margin="0,0,10,0"/>
+                        <TextBlock Style="{StaticResource RowLabel}" Text="Клавіша"/>
+                    </StackPanel>
+                    <ComboBox x:Name="CmbHotkey" Grid.Row="7" Grid.Column="1" Style="{StaticResource RoundCombo}" Margin="0,3" SelectionChanged="CmbHotkey_SelectionChanged"/>
+
+                    <!-- Checkboxes -->
+                    <StackPanel Grid.Row="8" Grid.Column="1" Margin="0,5,0,0">
+                        <CheckBox x:Name="ChkSpace" Margin="0,2" Content="Додавати пробіл після тексту"/>
+                        <CheckBox x:Name="ChkSwallow" Margin="0,2" Content="Перехоплювати клавішу (не передавати)" Checked="ChkSwallow_Changed" Unchecked="ChkSwallow_Changed"/>
+                        <CheckBox x:Name="ChkAutostart" Margin="0,2" Content="Запускати при старті Windows" Checked="ChkAutostart_Changed" Unchecked="ChkAutostart_Changed"/>
+                    </StackPanel>
+
+                    <!-- Input: audio/video file to transcribe -->
+                    <StackPanel Grid.Row="10" Grid.Column="0" Orientation="Horizontal" Margin="0,3">
+                        <TextBlock Style="{StaticResource Glyph}" Text="&#xE767;" FontSize="16" Foreground="{StaticResource Accent}" Margin="0,0,10,0"/>
+                        <TextBlock Style="{StaticResource RowLabel}" Text="Input"/>
+                    </StackPanel>
+                    <Grid Grid.Row="10" Grid.Column="1" Margin="0,3">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="40"/>
+                        </Grid.ColumnDefinitions>
+                        <Border Grid.Column="0" Style="{StaticResource ValueBox}"
+                                AllowDrop="True" DragOver="Input_DragOver" Drop="Input_Drop">
+                            <TextBlock x:Name="TxtInput" Style="{StaticResource ValueText}" Foreground="{StaticResource Dim}" Text="Виберіть або перетягніть файли"/>
+                        </Border>
+                        <Button x:Name="BtnInputBrowse" Grid.Column="1" Style="{StaticResource IconButton}" Content="&#xE8B7;" Margin="6,0,0,0" Click="BtnInputBrowse_Click" ToolTip="Вибрати аудіо/відео файл"/>
+                    </Grid>
+
+                    <!-- Output: folder to save the .txt transcript -->
+                    <StackPanel Grid.Row="11" Grid.Column="0" Orientation="Horizontal" Margin="0,3">
+                        <TextBlock Style="{StaticResource Glyph}" Text="&#xE8A5;" FontSize="16" Foreground="{StaticResource Accent}" Margin="0,0,10,0"/>
+                        <TextBlock Style="{StaticResource RowLabel}" Text="Output"/>
+                    </StackPanel>
+                    <Grid Grid.Row="11" Grid.Column="1" Margin="0,3">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="40"/>
+                        </Grid.ColumnDefinitions>
+                        <Border Grid.Column="0" Style="{StaticResource ValueBox}">
+                            <TextBlock x:Name="TxtOutput" Style="{StaticResource ValueText}" Foreground="{StaticResource Dim}" Text="Виберіть папку для збереження"/>
+                        </Border>
+                        <Button x:Name="BtnOutputBrowse" Grid.Column="1" Style="{StaticResource IconButton}" Content="&#xE8B7;" Margin="6,0,0,0" Click="BtnOutputBrowse_Click" ToolTip="Вибрати папку для збереження .txt"/>
+                    </Grid>
+                </Grid>
+
+                <!-- Status banner -->
+                <Border Grid.Row="1" Background="{StaticResource Surface}" CornerRadius="10" Padding="12,8" Margin="0,10,0,0">
+                    <StackPanel Orientation="Horizontal">
+                        <Grid Width="22" Height="22" Margin="0,0,10,0">
+                            <Ellipse x:Name="StatusDotBig" Fill="{StaticResource Green}"/>
+                            <TextBlock x:Name="StatusIcon" Style="{StaticResource Glyph}" Text="&#xE73E;" FontSize="11" Foreground="White" HorizontalAlignment="Center"/>
+                        </Grid>
+                        <TextBlock x:Name="TxtStatus" VerticalAlignment="Center" FontSize="13.5" FontWeight="SemiBold"
+                                   Foreground="{StaticResource Green}" Text="Завантажте модель…"/>
+                    </StackPanel>
+                </Border>
+
                 <!-- Log card -->
-                <Border Grid.Row="2" Background="{StaticResource Surface}" CornerRadius="14" Padding="16,12" Margin="0,14,0,0">
+                <Border Grid.Row="2" Background="{StaticResource Surface}" CornerRadius="10" Padding="12,8" Margin="0,10,0,0">
                     <Grid>
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto"/>
@@ -525,36 +508,36 @@
                         </Grid.RowDefinitions>
                         <Grid Grid.Row="0">
                             <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                                <TextBlock Style="{StaticResource Glyph}" Text="&#xE8A5;" FontSize="16" Foreground="{StaticResource Dim}" Margin="0,0,10,0"/>
+                                <TextBlock Style="{StaticResource Glyph}" Text="&#xE8A5;" FontSize="14" Foreground="{StaticResource Dim}" Margin="0,0,8,0"/>
                                 <TextBlock Text="Журнал розпізнавання" FontWeight="SemiBold" Foreground="{StaticResource Dim}" VerticalAlignment="Center"/>
                             </StackPanel>
                             <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
                                 <Button x:Name="BtnClear" Style="{StaticResource PillButton}" Click="BtnClear_Click">
                                     <StackPanel Orientation="Horizontal">
-                                        <TextBlock Style="{StaticResource Glyph}" Text="&#xE74D;" FontSize="14" Margin="0,0,7,0"/>
+                                        <TextBlock Style="{StaticResource Glyph}" Text="&#xE74D;" FontSize="12" Margin="0,0,6,0"/>
                                         <TextBlock Text="Очистити"/>
                                     </StackPanel>
                                 </Button>
-                                <Button x:Name="BtnCollapse" Style="{StaticResource IconButton}" Width="38" Height="34" Margin="8,0,0,0" Content="&#xE70E;" FontSize="12" Click="BtnCollapse_Click"/>
+                                <Button x:Name="BtnCollapse" Style="{StaticResource IconButton}" Width="32" Height="28" Margin="6,0,0,0" Content="&#xE70E;" FontSize="11" Click="BtnCollapse_Click"/>
                             </StackPanel>
                         </Grid>
-                        <TextBox x:Name="TxtLog" Grid.Row="1" Margin="0,12,0,0" Background="Transparent"
+                        <TextBox x:Name="TxtLog" Grid.Row="1" Margin="0,8,0,0" Background="Transparent"
                                  Foreground="{StaticResource Text}" BorderThickness="0" IsReadOnly="True"
-                                 TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" FontSize="13.5"/>
+                                 TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" FontSize="12.5"/>
                     </Grid>
                 </Border>
             </Grid>
 
             <!-- Bottom status bar -->
             <Border Grid.Row="2" Background="#0E1015" BorderBrush="{StaticResource Border}" BorderThickness="0,1,0,0">
-                <Grid Margin="20,0">
+                <Grid Margin="16,0">
                     <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                        <Ellipse x:Name="StatusDotSmall" Width="9" Height="9" Fill="{StaticResource Green}" Margin="0,0,8,0"/>
-                        <TextBlock x:Name="TxtBottom" Text="Готово" Foreground="{StaticResource Dim}" VerticalAlignment="Center"/>
+                        <Ellipse x:Name="StatusDotSmall" Width="8" Height="8" Fill="{StaticResource Green}" Margin="0,0,7,0"/>
+                        <TextBlock x:Name="TxtBottom" Text="Готово" Foreground="{StaticResource Dim}" FontSize="12" VerticalAlignment="Center"/>
                     </StackPanel>
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
-                        <Path Data="{StaticResource GeoChip}" Stroke="{StaticResource Dim}" StrokeThickness="1.6" StrokeLineJoin="Round" Width="15" Height="15" Stretch="Uniform" VerticalAlignment="Center" Margin="0,0,8,0"/>
-                        <TextBlock x:Name="TxtGpu" Text="GPU: —" Foreground="{StaticResource Dim}" VerticalAlignment="Center"/>
+                        <Path Data="{StaticResource GeoChip}" Stroke="{StaticResource Dim}" StrokeThickness="1.6" StrokeLineJoin="Round" Width="13" Height="13" Stretch="Uniform" VerticalAlignment="Center" Margin="0,0,7,0"/>
+                        <TextBlock x:Name="TxtGpu" Text="GPU: —" Foreground="{StaticResource Dim}" FontSize="12" VerticalAlignment="Center"/>
                     </StackPanel>
                 </Grid>
             </Border>

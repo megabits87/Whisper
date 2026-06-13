@@ -32,16 +32,5 @@ namespace VoiceTyper
 			}
 			catch { }
 		}
-
-		/// <summary>True if the run-at-login entry currently exists.</summary>
-		public static bool IsEnabled()
-		{
-			try
-			{
-				using RegistryKey? key = Registry.CurrentUser.OpenSubKey( RunKey );
-				return key?.GetValue( ValueName ) != null;
-			}
-			catch { return false; }
-		}
 	}
 }

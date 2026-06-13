@@ -5,7 +5,7 @@ namespace VoiceTyper
 	/// <summary>Generates the application/tray icon at runtime (a microphone on an accent tile).</summary>
 	static class AppIcon
 	{
-		public static Icon Create( int size = 32, bool listening = false )
+		public static Icon Create( int size = 32 )
 		{
 			using var bmp = new Bitmap( size, size );
 			using( var g = Graphics.FromImage( bmp ) )
@@ -23,8 +23,8 @@ namespace VoiceTyper
 					path.AddArc( r.Right - d, r.Bottom - d, d, d, 0, 90 );
 					path.AddArc( r.X, r.Bottom - d, d, d, 90, 90 );
 					path.CloseFigure();
-					Color top = listening ? Color.FromArgb( 220, 80, 90 ) : Theme.Accent;
-					Color bot = listening ? Color.FromArgb( 180, 40, 60 ) : Color.FromArgb( 40, 110, 210 );
+					Color top = Color.FromArgb( 124, 92, 255 ); // violet, matches the WPF theme
+					Color bot = Color.FromArgb( 40, 110, 210 );
 					using var bg = new LinearGradientBrush( r, top, bot, LinearGradientMode.Vertical );
 					g.FillPath( bg, path );
 				}

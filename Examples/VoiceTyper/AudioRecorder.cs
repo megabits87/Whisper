@@ -35,13 +35,6 @@ namespace VoiceTyper
 			return result;
 		}
 
-		public static MMDevice? DefaultDevice()
-		{
-			using var en = new MMDeviceEnumerator();
-			try { return en.GetDefaultAudioEndpoint( DataFlow.Capture, Role.Communications ); }
-			catch { return null; }
-		}
-
 		/// <summary>Begin capturing from the given device (null = default communications device).</summary>
 		public void Start( MMDevice? device )
 		{

@@ -25,8 +25,7 @@ namespace VoiceTyper
 		public int BeamSize { get; set; } = 5;
 
 		/// <summary>Start the whisper.cpp server with the given model. Blocking; call on a background thread.</summary>
-		/// <param name="adapter">Ignored — whisper.cpp uses the CUDA GPU automatically. Kept for call-site compatibility.</param>
-		public void Load( string path, string? adapter = null )
+		public void Load( string path )
 		{
 			Unload();
 			var s = new WhisperServer( ServerExe );
@@ -72,16 +71,19 @@ namespace VoiceTyper
 
 			// Gentle peak normalization into a copy. Deliberately NO filtering/denoise — raw PCM works best.
 			float gain = Math.Min( 0.95f / peak, 25f );
-			float[] samples = (float[])mono16k.Clone();
+			float[] samples = mono16k;
 			if( gain > 1.05f )
+			{
+				samples = new float[ mono16k.Length ];
 				for( int i = 0; i < samples.Length; i++ )
-					samples[ i ] *= gain;
+					samples[ i ] = mono16k[ i ] * gain;
+			}
 
-			string outText = s.Transcribe( samples, langCode ).Trim();
+			string outText = s.Transcribe( samples, langCode );
 			// whisper-server returns one line per segment; collapse ALL whitespace/newlines into single
 			// spaces so dictation never injects an Enter — that would send the message early in
 			// chat/Enter-to-send windows, leaving only the last segment in the input box.
-			outText = System.Text.RegularExpressions.Regex.Replace( outText, @"\s+", " " ).Trim();
+			outText = whitespaceRuns.Replace( outText, " " ).Trim();
 			if( IsHallucination( outText ) )
 			{
 				LastSkipReason = "відфільтровано (схоже на артефакт тиші)";
@@ -109,6 +111,9 @@ namespace VoiceTyper
 					try { System.IO.File.Delete( send ); } catch { }
 			}
 		}
+
+		static readonly System.Text.RegularExpressions.Regex whitespaceRuns =
+			new System.Text.RegularExpressions.Regex( @"\s+", System.Text.RegularExpressions.RegexOptions.Compiled );
 
 		// Credit artifacts Whisper emits on silence. Users never dictate these, so a substring match is safe.
 		static readonly string[] hallucinationCredits =

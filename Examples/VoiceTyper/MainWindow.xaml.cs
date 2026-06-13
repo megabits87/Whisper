@@ -119,10 +119,6 @@ namespace VoiceTyper
 			// Keep the run-at-login registry entry in sync with the saved preference (exe path may change).
 			Autostart.Apply( settings.AutoStart );
 
-			string gpuName = DetectGpuName();
-			TxtGpuName.Text = gpuName;
-			TxtGpu.Text = "GPU: " + ShortGpu( gpuName );
-
 			if( !string.IsNullOrWhiteSpace( settings.ModelPath ) && File.Exists( settings.ModelPath ) )
 				StartLoadModel( settings.ModelPath );
 			else
@@ -244,8 +240,6 @@ namespace VoiceTyper
 		// ---------- title bar ----------
 
 		void BtnMin_Click( object sender, RoutedEventArgs e ) => WindowState = WindowState.Minimized;
-		void BtnMax_Click( object sender, RoutedEventArgs e ) =>
-			WindowState = WindowState == WindowState.Maximized ? WindowState.Normal : WindowState.Maximized;
 		void BtnClose_Click( object sender, RoutedEventArgs e ) => Close();
 
 		// ---------- devices / gpus ----------
@@ -294,6 +288,8 @@ namespace VoiceTyper
 
 		void StartLoadModel( string path )
 		{
+			if( busy || recording )
+				return; // a reload would kill the server mid-transcription
 			if( string.IsNullOrWhiteSpace( path ) || !File.Exists( path ) )
 			{
 				SetStatus( "Файл моделі не знайдено", Red );
@@ -307,7 +303,7 @@ namespace VoiceTyper
 			{
 				try
 				{
-					recognizer.Load( path, null );
+					recognizer.Load( path );
 					Dispatcher.Invoke( () => OnModelLoaded( true, null ) );
 				}
 				catch( Exception ex )
@@ -332,35 +328,17 @@ namespace VoiceTyper
 			LblModelInfo.Text = $"Завантажено · {ml} · {Path.GetFileName( recognizer.ModelPath )}";
 			LblModelInfo.Foreground = recognizer.IsMultilingual ? Dim : Red;
 
+			// The GPU the server actually picked (parsed from its CUDA init log).
+			if( !string.IsNullOrEmpty( recognizer.GpuName ) )
+			{
+				TxtGpuName.Text = recognizer.GpuName;
+				TxtGpu.Text = "GPU: " + ShortGpu( recognizer.GpuName );
+			}
+
 			if( !recognizer.IsMultilingual && CurrentLanguageCode() != "en" )
 				AppendLog( "УВАГА: модель розпізнається як англомовна. Для української візьміть multilingual-модель до v3 (medium / large-v2)." );
 
 			ReadyStatus();
-		}
-
-		// The GPU whisper.cpp will use (CUDA device 0 = the discrete adapter). Shown read-only.
-		// Queried via WMI (Win32_VideoController) so it works on any machine/vendor with no native dependency.
-		static string DetectGpuName()
-		{
-			try
-			{
-				var names = new List<string>();
-				using var searcher = new System.Management.ManagementObjectSearcher( "SELECT Name FROM Win32_VideoController" );
-				foreach( System.Management.ManagementObject mo in searcher.Get() )
-				{
-					string? n = mo[ "Name" ]?.ToString();
-					if( !string.IsNullOrWhiteSpace( n ) ) names.Add( n! );
-				}
-				foreach( string a in names )
-				{
-					string n = a.ToLowerInvariant();
-					if( n.Contains( "nvidia" ) || n.Contains( "geforce" ) || n.Contains( "rtx" ) ||
-						n.Contains( "radeon" ) || ( n.Contains( "amd" ) && !n.Contains( "intel" ) ) )
-						return a;
-				}
-				return names.Count > 0 ? names[ 0 ] : "GPU";
-			}
-			catch { return "GPU"; }
 		}
 
 		static string ShortGpu( string g )

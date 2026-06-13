@@ -7,8 +7,7 @@ namespace VoiceTyper
 	{
 		public string ModelPath { get; set; } = "";
 		public string? DeviceId { get; set; }          // null = default communications device
-		public string? GpuAdapter { get; set; }         // null/empty = auto; otherwise exact adapter name
-		public string LanguageMode { get; set; } = "uk"; // auto | uk | en | ru
+		public string LanguageMode { get; set; } = "uk"; // uk | en | ru
 		public string Insert { get; set; } = "SendInput"; // SendInput | Clipboard
 		// Stable hotkey identity (see MainWindow.HotkeyChoices). MUST default to null, not a real id:
 		// legacy settings.json files have no HotkeyId, and a non-null default would override their HotkeyVk.
